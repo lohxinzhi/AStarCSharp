@@ -1,0 +1,51 @@
+﻿<Window x:Class="PathFinding.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PathFinding"
+        mc:Ignorable="d"
+        Title="Path Finding" Height="800" Width="800"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF">
+    <ScrollViewer>
+        <StackPanel Orientation="Vertical" Height="Auto">
+            <TextBlock Margin="10,0,10,10" FontSize="18" HorizontalAlignment="Left" FontWeight="DemiBold">
+                Visualisation of PathFinding Algorithms
+            </TextBlock>
+            <GroupBox Header="Algorithms" FontSize="15" Width="Auto" Height="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Name="button_AStarMode" Content="A*" Height="35" HorizontalAlignment="Center" Width="180" FontSize="20" FontFamily="3ds Light" BorderThickness="5,5,5,5" Opacity="0.66" Click="button_AStarMode_Click" Grid.Column="0"/>
+                    <Button Name="button_RRTMode" Content="RRT" Height="35" HorizontalAlignment="Center" Width="180" FontSize="20" FontFamily="3ds Light" BorderThickness="5,5,5,5" Opacity="0.66" Click="button_RRTMode_Click" Grid.Column="1"/>
+                    <Button Name="button_RRTStarMode" Content="RRT*" Height="35" HorizontalAlignment="Center" Width="180" FontSize="20" FontFamily="3ds Light" BorderThickness="5,5,5,5" Opacity="0.66" Click="button_RRTStar_Click" Grid.Column="2"/>
+
+                    <TextBox Name="textBox_CurrentMethod" Grid.Row="1" HorizontalAlignment="Center" Grid.ColumnSpan="3" Height="35" Width="180"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Visualiser" FontSize="15" Height="Auto" Width="Auto">
+                <ScottPlot:WpfPlot x:Name="Plot_1" Height="500" Width="Auto" Margin="10,10,10,10"/>
+            </GroupBox>
+            <GroupBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Button Name="button_UploadMap" Content="Upload Map" Grid.Column="0" HorizontalAlignment="Left" Height="35" Width="120" Margin="15,0,0,5" FontSize="18" Click="button_UploadMap_Click"/>
+
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
