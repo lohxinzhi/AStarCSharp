@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PathFinding"
         mc:Ignorable="d"
-        Title="Path Finding" Height="800" Width="800"
+        Title="Path Finding" 
+        Height="1000" Width="800"
         xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF">
     <ScrollViewer>
         <StackPanel Orientation="Vertical" Height="Auto">
@@ -36,13 +37,33 @@
             <GroupBox>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="136*"/>
+                        <ColumnDefinition Width="192*"/>
+                        <ColumnDefinition Width="70
+                                          *"/>
+                        <ColumnDefinition Width="75*"/>
+                        <ColumnDefinition Width="308*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
-                    <Button Name="button_UploadMap" Content="Upload Map" Grid.Column="0" HorizontalAlignment="Left" Height="35" Width="120" Margin="15,0,0,5" FontSize="18" Click="button_UploadMap_Click"/>
+
+                    <Button Name="button_UploadMap" Content="Upload Map" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Width="120" Margin="10,0,0,5" FontSize="18" Click="button_UploadMap_Click"/>
+                    <TextBlock Text="Initial X:" Grid.Row="1" Grid.Column="0" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Width="74" />
+                    <TextBlock Text="Initial Y:" Grid.Row="2" Grid.Column="0" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Width="73" />
+                    <TextBox Name="textBox_InitialX" Grid.Row="1" Grid.Column="1" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="0,2,0,2" TextChanged="textBox_InitialX_TextChanged" Text="0.0" TextAlignment="Center" />
+                    <TextBox Name="textBox_InitialY" Grid.Row="2" Grid.Column="1" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="0,2,0,2" TextChanged="textBox_InitialY_TextChanged" Text="0.0" TextAlignment="Center"/>
+
+                    <TextBlock Text="Target X :" Grid.Row="1" Grid.Column="1" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="191,0,0,0" Width="85" />
+                    <TextBlock Text="Target Y :" Grid.Row="2" Grid.Column="1" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="191,0,0,0" Width="84" />
+                    <TextBox Name="textBox_TargetX" Grid.Row="1" Grid.Column="4" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="6,2,0,2" TextChanged="textBox_TargetX_TextChanged" Text="0.0" TextAlignment="Center"/>
+                    <TextBox Name="textBox_TargetY" Grid.Row="2" Grid.Column="4" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="6,2,0,2" TextChanged="textBox_TargetY_TextChanged" Text="0.0" TextAlignment="Center"  />
+
+                    <TextBlock Text="Node Diameter" Grid.Column="1" Grid.Row="0" FontSize="20" TextAlignment="Center"/>
+                    <Slider x:Name="slider_NodeDiameter" Grid.Column="3" HorizontalAlignment="Left" Maximum="50" Width="300" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="26,0,0,0" Height="35" Value="10" ValueChanged="slider_NodeDiameter_ValueChanged" Minimum="0.5" TickFrequency="0.5" TickPlacement="BottomRight" IsSnapToTickEnabled="True"/>
+                    <TextBox Name="textBox_NodeDiameter" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="35" Text="{Binding ElementName=slider_NodeDiameter, Path=Value}" FontSize="20" TextAlignment="Center"/>
 
                 </Grid>
             </GroupBox>

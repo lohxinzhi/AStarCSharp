@@ -1,19 +1,34 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Documents;
+using System.Windows.Input;
 using OpenTK.Graphics.OpenGL;
 
 namespace PathFinding
 {
     public class Node
     {
-        public float[] Position {get;set;}
-        public Node Parent {get; set;}
-        public bool Walkable {get;set;}
+        public float[] Position;
+        public Node Parent;
+        public bool Walkable;
+        public int gCost;
+        public int hCost;
+        public int gridX;
+        public int gridY;
 
-        public Node(float[] position, bool walkable = true, Node parent = null){
+        public Node(float[] position, int _gridX, int _gridY, bool walkable = true, Node parent = null){
             Position = position;
             Parent = parent;
             Walkable = walkable;
+            gridX = _gridX;
+            gridY = _gridY;
         }
+
+        public int fCost{
+            get{
+                return gCost+hCost;
+            }
+        }
+        
     }
 
     public class Grid
@@ -21,7 +36,7 @@ namespace PathFinding
         public int[] mapSize{get;set;} // size of image
         public byte[,] occupancyGrid{get;set;} // from an image
         public float nodeRadius{get;set;}
-        public float nodeDiameter{get;set;}
+        public float nodeDiameter { get; set;}
         public int GridSizeX {get;set;} 
         public int GridSizeY {get;set;} // number of nodes along x and y axis
 
@@ -58,9 +73,32 @@ namespace PathFinding
                     point[0] = x*nodeDiameter+nodeRadius;
                     point[1] = y*nodeDiameter+nodeRadius;
                     bool walkable = Walkable(point);
-                    grid[x,y] = new Node(point, walkable,null);
+                    grid[x,y] = new Node(point,x,y, walkable,null);
                 }
             }
+
+        }
+
+        public List<Node> GetNeighbours(Node node){
+            var neighbour = new List<Node> ();
+            int x = node.gridX;
+            int y = node.gridY;
+            for(int i = -1; i<=1; i++){
+                for(int j = -1; j<=1; j++){
+                    if (i==0 && j==0){
+                        continue;
+                    }
+                    int checkX = x+i;
+                    int checkY= y+j;
+                    if (checkX>=0 && checkX<GridSizeX && checkY>=0 && checkY<GridSizeY){
+                        neighbour.Add(grid[checkX,checkY]);
+                    } 
+                }
+            }
+            return neighbour;
+
+
+            return neighbour;
 
         }
 
@@ -91,9 +129,20 @@ namespace PathFinding
         }
 
         public Node GetNearestNodeFromPosition(float[] position){
+            if (position[0] > mapSize[0] || position[1] > mapSize[1]){
+                return null;
+            }
             int x =(int)Math.Round(position[0]/nodeDiameter);
             int y =(int)Math.Round(position[1]/nodeDiameter);
             return grid[x,y];
+        }
+
+        public int GetDistance(Node start, Node end){
+            int XDist = Math.Abs(start.gridX-end.gridX);
+            int YDist = Math.Abs(start.gridY-end.gridY);
+            int max = Math.Max(XDist,YDist);
+            int min = Math.Min(XDist,YDist);
+            return (max-min)*10 + min*14;
         }
 
         
