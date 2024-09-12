@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -5,7 +6,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace PathFinding
 {
-    public class Node
+    public class Node: IHeapItem<Node>
     {
         public float[] Position;
         public Node Parent;
@@ -14,13 +15,15 @@ namespace PathFinding
         public int hCost;
         public int gridX;
         public int gridY;
+        int heapIndex;
 
-        public Node(float[] position, int _gridX, int _gridY, bool walkable = true, Node parent = null){
+        public Node(float[] position, int _gridX, int _gridY, bool walkable = true, Node parent = null, int _heapIndex=-1){
             Position = position;
             Parent = parent;
             Walkable = walkable;
             gridX = _gridX;
             gridY = _gridY;
+            heapIndex = _heapIndex;
         }
 
         public int fCost{
@@ -28,7 +31,26 @@ namespace PathFinding
                 return gCost+hCost;
             }
         }
-        
+
+        public int HeapIndex{
+            get{
+                return heapIndex;
+            }
+            set{
+                heapIndex = value;
+            }
+        }
+        public int CompareTo(Node other){
+            if (other==null){
+                return 1;
+            }
+            int Compare = this.fCost.CompareTo(other.fCost);
+            if (Compare == 0){
+                Compare = this.hCost.CompareTo(other.hCost);
+            }
+            return Compare;
+            
+        }
     }
 
     public class Grid

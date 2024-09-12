@@ -19,18 +19,12 @@ namespace PathFinding
                 return null;
             }
 
-            List<Node> openSet = new List<Node>();
+            MinHeap<Node> openSet = new MinHeap<Node>();
             HashSet<Node> closeSet = new HashSet<Node>();
-            openSet.Add(startNode);
+            openSet.Insert(startNode);
             while(openSet.Count>0){
-                Node currentNode = openSet[0];
-                for(int i = 1; i<openSet.Count; i++){ // get lowest cost node
-                    if (openSet[i].fCost < currentNode.fCost || (openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost) ){
-                        currentNode = openSet[i];
-                    }
-                }
+                Node currentNode = openSet.Pop(); // get lowest in node
                 closeSet.Add(currentNode);
-                openSet.Remove(currentNode);
                 if(currentNode == targetNode){
                     //found path
                     var nodePath = RetracePath(targetNode);
@@ -45,13 +39,16 @@ namespace PathFinding
                     if (!node.Walkable || closeSet.Contains(node)){
                         continue;
                     }
-                    if(!openSet.Contains(node) || node.gCost > currentNode.gCost+MapGrid.GetDistance(node,currentNode)) {
+                    if(!openSet.Data.Contains(node) || node.gCost > currentNode.gCost+MapGrid.GetDistance(node,currentNode)) { // update the openset heap
                         node.gCost = currentNode.gCost+MapGrid.GetDistance(node, currentNode);
                         node.hCost = MapGrid.GetDistance(targetNode, node);
                         node.Parent = currentNode;
                     
-                        if (!openSet.Contains(node)){
-                            openSet.Add(node);
+                        if (!openSet.Data.Contains(node)){
+                            openSet.Insert(node);
+                        }
+                        else{
+                            openSet.UpdateHeap(node);
                         }
                     }
                 }
