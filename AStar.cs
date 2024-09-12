@@ -3,14 +3,23 @@ using OpenTK.Graphics.OpenGL;
 
 namespace PathFinding
 {
+    public class AStarResult
+    {
+        public float[][] path;
+        public HashSet<Node> closeSet;
 
+        public AStarResult(float[][] _path, HashSet<Node> _closeSet){
+            path = _path;
+            closeSet = _closeSet;
+        }
+    }
     public class AStarSearch
     {
-        public static float[][] getPath(float[] startPose, float[] targetPose, float nodeDiameter, ScottPlot.Image map){
+        public static AStarResult getPath(float[] startPose, float[] targetPose, float nodeDiameter, ScottPlot.Image map){
             Grid MapGrid = new Grid(nodeDiameter,  map);
             return getPath(startPose, targetPose,nodeDiameter, MapGrid);
         }
-        public static float[][] getPath(float[] startPose, float[] targetPose, float nodeDiameter, Grid MapGrid){
+        public static AStarResult getPath(float[] startPose, float[] targetPose, float nodeDiameter, Grid MapGrid){
             
             Node startNode = MapGrid.GetNearestNodeFromPosition(startPose);
             Node targetNode = MapGrid.GetNearestNodeFromPosition(targetPose);
@@ -32,7 +41,7 @@ namespace PathFinding
                     for(int i = 0; i<path.Length; i++){
                         path[i] = [nodePath[i].Position[0],nodePath[i].Position[1]];
                     }
-                    return path;
+                    return new AStarResult(path, closeSet);
                 }
                 var neighbours = MapGrid.GetNeighbours(currentNode);
                 foreach(var node in neighbours){
@@ -53,7 +62,7 @@ namespace PathFinding
                     }
                 }
             }
-            return [startNode.Position,targetNode.Position];
+            return new AStarResult([startNode.Position,targetNode.Position],closeSet);
         }
 
 

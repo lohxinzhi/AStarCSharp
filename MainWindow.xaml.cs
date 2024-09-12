@@ -92,13 +92,28 @@ public partial class MainWindow : Window
         }
     }
 
+    void ShowExpanded(HashSet<Node> closeSet){
+        foreach (var node in closeSet){
+            ScottPlot.Plottables.Rectangle rect = new(){
+                    X1 = node.Position[0] - MapGrid.nodeRadius,
+                    X2 = node.Position[0] + MapGrid.nodeRadius,
+                    Y1 = node.Position[1] - MapGrid.nodeRadius,
+                    Y2 = node.Position[1] + MapGrid.nodeRadius,
+                    LineColor = palette1.GetColor(6),
+                    FillColor = palette1.GetColor(6).WithAlpha(0.5),
+            };
+            Plot_1.Plot.PlottableList.Add(rect);
+            Plot_1.Refresh();
+        }
+    }
+
     private void button_AStarMode_Click(object sender, RoutedEventArgs e)
     {
         MapGrid = new Grid(nodeDiameter, Map);
         // ShowMap(MapGrid);
-        var wp = AStarSearch.getPath([InitialX,InitialY], [TargetX,TargetY], nodeDiameter, Map);
-        ShowPath(wp);         
-        
+        var result = AStarSearch.getPath([InitialX,InitialY], [TargetX,TargetY], nodeDiameter, Map);
+        ShowPath(result.path);         
+        ShowExpanded(result.closeSet);
     }
 
     private void slider_NodeDiameter_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -108,8 +123,8 @@ public partial class MainWindow : Window
         if (MapGrid != null) 
         {   
             
-            var wp = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
-            ShowPath(wp);
+            var result = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
+            ShowPath(result.path);
         }
 
     }
@@ -118,8 +133,8 @@ public partial class MainWindow : Window
     {
         if (float.TryParse(textBox_InitialX.Text, out InitialX) && MapGrid!=null)
         {
-            var wp = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
-            ShowPath(wp);
+            var result = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
+            ShowPath(result.path);
         }
     }
 
@@ -127,8 +142,8 @@ public partial class MainWindow : Window
     {
         if(float.TryParse(textBox_InitialY.Text, out InitialY) && MapGrid!=null)
         {
-            var wp = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
-            ShowPath(wp);
+            var result = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
+            ShowPath(result.path);
         }
     }
 
@@ -136,16 +151,16 @@ public partial class MainWindow : Window
     {
         if (float.TryParse(textBox_TargetX.Text, out TargetX) && MapGrid!=null)
         {
-            var wp = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
-            ShowPath(wp);
+            var result = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
+            ShowPath(result.path);
         }
     }
     private void textBox_TargetY_TextChanged(object sender, TextChangedEventArgs e)
     {
         if(float.TryParse(textBox_TargetY.Text, out TargetY) && MapGrid!=null)
         {
-            var wp = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
-            ShowPath(wp);
+            var result = AStarSearch.getPath([InitialX, InitialY], [TargetX, TargetY], nodeDiameter, Map);
+            ShowPath(result.path);
         }
     }
 
