@@ -28,7 +28,7 @@
                     <Button Name="button_RRTMode" Content="RRT" Height="35" HorizontalAlignment="Center" Width="180" FontSize="20" FontFamily="3ds Light" BorderThickness="5,5,5,5" Opacity="0.66" Click="button_RRTMode_Click" Grid.Column="1"/>
                     <Button Name="button_RRTStarMode" Content="RRT*" Height="35" HorizontalAlignment="Center" Width="180" FontSize="20" FontFamily="3ds Light" BorderThickness="5,5,5,5" Opacity="0.66" Click="button_RRTStar_Click" Grid.Column="2"/>
 
-                    <TextBox Name="textBox_CurrentMethod" Grid.Row="1" HorizontalAlignment="Center" Grid.ColumnSpan="3" Height="35" Width="180"/>
+                    <TextBox Name="textBox_CurrentMethod" Grid.Row="1" HorizontalAlignment="Center" Grid.ColumnSpan="3" Height="35" Width="180" TextAlignment="Center" FontSize="20" FontWeight="SemiBold"/>
                 </Grid>
             </GroupBox>
             <GroupBox Header="Visualiser" FontSize="15" Height="Auto" Width="Auto">
@@ -37,14 +37,17 @@
             <GroupBox>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="136*"/>
-                        <ColumnDefinition Width="192*"/>
-                        <ColumnDefinition Width="70
-                                          *"/>
-                        <ColumnDefinition Width="75*"/>
-                        <ColumnDefinition Width="308*"/>
+                        <ColumnDefinition Width="134*"/>
+                        <ColumnDefinition Width="190*"/>
+                        <ColumnDefinition Width="69*"/>
+                        <ColumnDefinition Width="74*"/>
+                        <ColumnDefinition Width="158*"/>
+                        <ColumnDefinition Width="60*"/>
+                        <ColumnDefinition Width="86*"/>
+
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
@@ -53,18 +56,26 @@
                     <Button Name="button_UploadMap" Content="Upload Map" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Width="120" Margin="10,0,0,5" FontSize="18" Click="button_UploadMap_Click"/>
                     <TextBlock Text="Initial X:" Grid.Row="1" Grid.Column="0" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Width="74" />
                     <TextBlock Text="Initial Y:" Grid.Row="2" Grid.Column="0" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Width="73" />
-                    <TextBox Name="textBox_InitialX" Grid.Row="1" Grid.Column="1" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="0,2,0,2" TextChanged="textBox_InitialX_TextChanged" Text="0.0" TextAlignment="Center" />
-                    <TextBox Name="textBox_InitialY" Grid.Row="2" Grid.Column="1" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="0,2,0,2" TextChanged="textBox_InitialY_TextChanged" Text="0.0" TextAlignment="Center"/>
+                    <TextBox Name="textBox_InitialX" Grid.Row="1" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="0,2,0,2" TextChanged="textBox_InitialX_TextChanged" Text="0.0" TextAlignment="Center" Grid.Column="1" />
+                    <TextBox Name="textBox_InitialY" Grid.Row="2" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="0,2,0,2" TextChanged="textBox_InitialY_TextChanged" Text="0.0" TextAlignment="Center" Grid.Column="1"/>
 
-                    <TextBlock Text="Target X :" Grid.Row="1" Grid.Column="1" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="191,0,0,0" Width="85" />
-                    <TextBlock Text="Target Y :" Grid.Row="2" Grid.Column="1" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="191,0,0,0" Width="84" />
+                    <TextBlock Text="Target X :" Grid.Row="1" Grid.Column="2" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="1,0,0,0" Width="85" />
+                    <TextBlock Text="Target Y :" Grid.Row="2" Grid.Column="2" Height="35" VerticalAlignment="Bottom" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="1,0,0,0" Width="84" />
                     <TextBox Name="textBox_TargetX" Grid.Row="1" Grid.Column="4" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="6,2,0,2" TextChanged="textBox_TargetX_TextChanged" Text="0.0" TextAlignment="Center"/>
                     <TextBox Name="textBox_TargetY" Grid.Row="2" Grid.Column="4" Width="100" HorizontalAlignment="Left" Background="AntiqueWhite" FontSize="20" Margin="6,2,0,2" TextChanged="textBox_TargetY_TextChanged" Text="0.0" TextAlignment="Center"  />
 
-                    <TextBlock Text="Node Diameter" Grid.Column="1" Grid.Row="0" FontSize="20" TextAlignment="Center"/>
-                    <Slider x:Name="slider_NodeDiameter" Grid.Column="3" HorizontalAlignment="Left" Maximum="50" Width="300" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="26,0,0,0" Height="35" Value="10" ValueChanged="slider_NodeDiameter_ValueChanged" Minimum="0.5" TickFrequency="0.5" TickPlacement="BottomRight" IsSnapToTickEnabled="True"/>
-                    <TextBox Name="textBox_NodeDiameter" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="35" Text="{Binding ElementName=slider_NodeDiameter, Path=Value}" FontSize="20" TextAlignment="Center"/>
+                    <TextBlock Text="Node Diameter" Grid.Row="0" FontSize="20" TextAlignment="Center" Grid.Column="1"/>
+                    <Slider x:Name="slider_NodeDiameter" Grid.Column="4" HorizontalAlignment="Left" Maximum="50" Width="300" VerticalAlignment="Center" Height="36" Value="10" ValueChanged="slider_NodeDiameter_ValueChanged" Minimum="0.5" TickFrequency="0.5" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Grid.ColumnSpan="3" Margin="2,0,0,0"/>
+                    <TextBox Name="textBox_NodeDiameter" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="36" Text="{Binding ElementName=slider_NodeDiameter, Path=Value}" FontSize="20" TextAlignment="Center"/>
+                    
+                    <TextBlock Text="Show Explored Nodes" Height="35" Grid.Column="5" Grid.Row="1" TextWrapping="Wrap" FontWeight="SemiBold"/>
+                    <CheckBox Name="checkBox_ShowExplored" Grid.Row="1" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Checked="checkBox_ShowExplored_Checked" Unchecked="checkBox_ShowExplored_Unchecked"/>
 
+                    <TextBlock Text="Simplify Path" Height="35" Grid.Column="5" Grid.Row="2" TextWrapping="Wrap" FontWeight="SemiBold"/>
+                    <CheckBox Name="checkBox_SimplifyPath" Grid.Row="2" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Checked="checkBox_SimplifyPath_Checked" Unchecked="checkBox_SimplifyPath_Unchecked"/>
+
+                    <Slider x:Name="slider_RRTIteration" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="6" VerticalAlignment="Center" HorizontalAlignment="Center" Width="600" TickPlacement="BottomRight" Interval="2000" Minimum="1000" Maximum="10000" Value="5000" ValueChanged="slider_RRTIteration_ValueChanged"/>
+                    <TextBox Name="textBox_RRTIteration" Grid.Column="6" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Width="60" Height="35" Text="{Binding ElementName=slider_RRTIteration, Path=Value}" TextAlignment="Center"/>
                 </Grid>
             </GroupBox>
         </StackPanel>

@@ -6,6 +6,16 @@ using OpenTK.Graphics.OpenGL;
 
 namespace PathFinding
 {
+    public class RRTNode
+    {
+        public float[] Position;
+        public RRTNode Parent;
+
+        public RRTNode(float[] position, RRTNode parent=null){
+            Position = position;
+            Parent = parent;
+        }
+    }
     public class Node: IHeapItem<Node>
     {
         public float[] Position;
@@ -156,6 +166,8 @@ namespace PathFinding
             }
             int x =(int)Math.Round(position[0]/nodeDiameter);
             int y =(int)Math.Round(position[1]/nodeDiameter);
+            x = Math.Clamp(x, 0, GridSizeX - 1);
+            y = Math.Clamp(y, 0, GridSizeY - 1);
             return grid[x,y];
         }
 
