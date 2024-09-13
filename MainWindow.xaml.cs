@@ -21,7 +21,7 @@ namespace PathFinding;
 /// </summary>
 public partial class MainWindow : Window
 {
-    ScottPlot.Image Map;
+    ScottPlot.Image Map = new ScottPlot.Image("C:\\Users\\Administrator\\Desktop\\xinzhi\\Others\\CS App Test\\PathFinding\\map_2.bmp");
     Grid MapGrid;
     IPalette palette1 = new ScottPlot.Palettes.Category20();
 
@@ -29,7 +29,8 @@ public partial class MainWindow : Window
     float nodeDiameter = 10f;
     bool showExpanded = false;
     bool simplifyPath = false;
-    int RRTIternation = 5000;
+    int RRTIteration = 5000;
+    int showRRTNodeCount = 1;
     SearchAlgo searchAlgo = SearchAlgo.ASTAR;
 
     AStarResult aStarResult;
@@ -55,7 +56,7 @@ public partial class MainWindow : Window
         {
 
             // Images may be loaded from files or created dynamically
-            Map = new ScottPlot.Image("C:\\Users\\Administrator\\Desktop\\xinzhi\\Others\\CS App Test\\PathFinding\\map_2.bmp");
+           
 
             CoordinateRect rect = new(left: 0, right: Map.Width, bottom: 0, top: Map.Height);
 
@@ -93,15 +94,29 @@ public partial class MainWindow : Window
     void ShowPath(float[][] wp){
         if (wp!=null){
             Plot_1.Plot.Clear();
-            ShowMap(MapGrid);
+
+            // Show Map Image
+            CoordinateRect rect = new(left: 0, right: Map.Width, bottom: 0, top: Map.Height);
+            Plot_1.Plot.Add.ImageRect(Map, rect);
+
+            //If AStar, show the grid based on the diameter size
+            if (searchAlgo == SearchAlgo.ASTAR){
+                ShowMap(MapGrid);            
+            }
+
+            // Coordinates for the path to make a scatter plot
             var wp_coord = new Coordinates[wp.Length];
             for(int i = 0; i< wp.Length; i++){
                 wp_coord[i] = new Coordinates(wp[i][0],wp[i][1]);
             }
+
+
             Plot_1.Plot.Add.Scatter(wp_coord,color:palette1.GetColor(5));
             Plot_1.Plot.Add.Marker(wp[0][0], wp[0][1],size:15,color:palette1.GetColor(7));
             Plot_1.Plot.Add.Marker(wp.Last()[0], wp.Last()[1], size: 15,color:palette1.GetColor(19));
             Plot_1.Refresh(); 
+
+            // Show nodes that are explored/expanded
             if (showExpanded)
             {
                 switch(searchAlgo)
@@ -111,7 +126,7 @@ public partial class MainWindow : Window
                         break;
                     }
                     case SearchAlgo.RRT:{
-                        ShowExpanded(rRTResult.treeList);
+                        ShowExpanded(rRTResult.treeList, rRTResult.occupancyGrid,rRTResult.farNodeList);
                         break;
                     }
                 }
@@ -119,6 +134,7 @@ public partial class MainWindow : Window
         }
     }
 
+    // For AStar
     void ShowExpanded(HashSet<Node> closeSet){
         foreach (var node in closeSet){
             ScottPlot.Plottables.Rectangle rect = new(){
@@ -133,9 +149,60 @@ public partial class MainWindow : Window
             Plot_1.Refresh();
         }
     }
-    void ShowExpanded(List<RRTNode> treeList){
+
+    // For RRT
+    void ShowExpanded(List<RRTNode> treeList, bool[,] occupancyGrid=null, List<RRTNode> farNodeList=null){
+        occupancyGrid=null;
+        if (occupancyGrid!=null){
+            for(int i = 0; i<occupancyGrid.GetLength(0); i++){
+                for(int j=0;j<occupancyGrid.GetLength(1); j++){
+                    if(occupancyGrid[i,j]){
+                    ScottPlot.Plottables.Rectangle rect = new(){
+                        X1 = i - 0.5,
+                        X2 = i + 0.5,
+                        Y1 = j - 0.5,
+                        Y2 = j + 0.5,
+                        LineColor = ScottPlot.Color.FromHex("#949494"),
+                        FillColor = ScottPlot.Color.FromHex("#949494").WithAlpha(0.5),
+                };
+            Plot_1.Plot.PlottableList.Add(rect);
+                    }
+                }
+            }
+        }
+        int count = 1;
+        if(farNodeList!=null){
+            // foreach(var node in farNodeList){
+            //     if(count>= showRRTNodeCount){
+            //         break;
+            //     }
+            //     Plot_1.Plot.Add.Marker(node.Position[0], node.Position[1], size:5, color:palette1.GetColor(count==showRRTNodeCount-1?0:1));
+            //     count++;
+            // }
+            var last = farNodeList[Math.Clamp(showRRTNodeCount-1,0,farNodeList.Count-1)];
+            Plot_1.Plot.Add.Marker(last.Position[0], last.Position[1], size:5, color:palette1.GetColor(0));
+
+        }
+        count = 0;
         foreach(var node in treeList){
-            Plot_1.Plot.Add.Marker(node.Position[0], node.Position[1], size:15, color:palette1.GetColor(6));
+            if (count >= showRRTNodeCount)
+            {
+                break;
+            }
+            Plot_1.Plot.Add.Marker(node.Position[0], node.Position[1], size:5, color:palette1.GetColor(count==showRRTNodeCount-1?6:2));
+            if (node.Parent != null) {
+                ScottPlot.Plottables.LinePlot line = new ScottPlot.Plottables.LinePlot()
+                {
+                    Start = new Coordinates( node.Position[0],node.Position[1]),
+                    End = new Coordinates(node.Parent.Position[0], node.Parent.Position[1])
+                };
+                line.LineStyle.Color = ScottPlot.Color.FromHex(	"#000000");
+                line.MarkerStyle.FillColor = line.LineStyle.Color;
+                Plot_1.Plot.PlottableList.Add(line);
+            }
+
+            count++;
+
         }
         Plot_1.Refresh();
     }
@@ -177,7 +244,7 @@ public partial class MainWindow : Window
     
     void UpdateRRT()
     {
-        rRTResult = RRTSearch.getPath([InitialX, InitialY], [TargetX, TargetY],nodeDiameter,1000,Map);
+        rRTResult = RRTSearch.getPath([InitialX, InitialY], [TargetX, TargetY],nodeDiameter,RRTIteration,Map);
         if (rRTResult!=null){
             ShowPath(rRTResult.path);
         }
@@ -186,6 +253,30 @@ public partial class MainWindow : Window
     void UpdateRRTSTAR()
     {
         ;
+    }
+
+    void UpdateView()
+    {
+        switch (searchAlgo)
+        {
+            default:
+            case SearchAlgo.ASTAR:{
+                if(aStarResult!=null){
+                    ShowPath(aStarResult.path);
+                }
+                break;
+            }
+            case SearchAlgo.RRT:{
+                if (rRTResult!=null){
+                    ShowPath(rRTResult.path);
+                }
+                break;
+            }
+            case SearchAlgo.RRTSTAR:{
+                ;
+                break;
+            }
+        }
     }
 
     private void slider_NodeDiameter_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -233,7 +324,7 @@ public partial class MainWindow : Window
     private void checkBox_ShowExplored_Checked(object sender, RoutedEventArgs e)
     {
         showExpanded = true;
-        Update();
+        UpdateView();
 
     }
 
@@ -241,7 +332,7 @@ public partial class MainWindow : Window
     {
         Plot_1.Plot.Clear();
         showExpanded = false;
-        Update();
+        UpdateView();
     }
     private void checkBox_SimplifyPath_Checked(object sender, RoutedEventArgs e)
     {
@@ -261,8 +352,14 @@ public partial class MainWindow : Window
 
     private void slider_RRTIteration_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        RRTIternation = (int)slider_RRTIteration.Value;
+        RRTIteration = (int)slider_RRTIteration.Value;
         Update();
+    }
+
+    private void slider_RRTShowNodes_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        showRRTNodeCount = (int)slider_RRTShowNodes.Value;
+        UpdateView();
     }
 
     private void button_RRTMode_Click(object sender, RoutedEventArgs e)

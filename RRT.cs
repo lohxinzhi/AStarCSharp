@@ -7,10 +7,15 @@ namespace PathFinding
     {
         public float[][] path;
         public List<RRTNode> treeList;
+        public bool[,] occupancyGrid;
+        public List<RRTNode> farNodeList;
 
-        public RRTResult(float[][] _path, List<RRTNode> _treeList){
+        public RRTResult(float[][] _path, List<RRTNode> _treeList, bool[,] _occupancyGrid, List<RRTNode> _farNodeList){
             path = _path;
             treeList = _treeList;
+            occupancyGrid = _occupancyGrid;
+            farNodeList = _farNodeList;
+
         }
 
     }
@@ -23,10 +28,21 @@ namespace PathFinding
             RRTNode currentNode = new RRTNode(startPose);
             List<RRTNode> treeNodes = new();
             treeNodes.Add(currentNode);
+            List<RRTNode> farNodeList = new();
+            RRTNode nearestNodeToTarget = currentNode;
 
             int currentIteration = 0;
-            while(GetDistance(targetPose, currentNode.Position) > distanceThreshold && currentIteration < maxIteration){
-                RRTNode farNode = new RRTNode([rnd.Next(0,occupancyGrid.GetLength(0)) , rnd.Next(0,occupancyGrid.GetLength(1))]); // sample random node in the field
+            // while(GetDistance(targetPose, currentNode.Position) > distanceThreshold && currentIteration < maxIteration){
+            while(currentIteration < maxIteration){
+
+                RRTNode farNode;
+                if(currentIteration%20==0){
+                    farNode = new RRTNode([rnd.Next((int)targetPose[0]-20,(int)targetPose[0]+20) , rnd.Next((int)targetPose[1]-20,(int)targetPose[1]+20)]); // sample random node in the field
+                }
+                else{
+                    farNode = new RRTNode([rnd.Next(-occupancyGrid.GetLength(0)/10,occupancyGrid.GetLength(0)) , rnd.Next(-occupancyGrid.GetLength(1)/10,occupancyGrid.GetLength(1))]); // sample random node in the field
+                }
+                farNodeList.Add(farNode);
                 var nearestNode = treeNodes[0];
                 foreach(var node in treeNodes){ // get nearest node to the random far node
                     if (GetDistance(node.Position, farNode.Position) < GetDistance(nearestNode.Position, farNode.Position)){
@@ -34,21 +50,24 @@ namespace PathFinding
                     }
                 }
                 treeNodes.Add(getNextNode(farNode,nearestNode,distanceThreshold,occupancyGrid));
-
+                currentNode = treeNodes.Last();
+                if( GetDistance(currentNode.Position,targetPose) <GetDistance(nearestNodeToTarget.Position,targetPose)){
+                    nearestNodeToTarget=currentNode;
+                }
                 currentIteration++;
             }
 
-            if(GetDistance(targetPose, currentNode.Position) <= distanceThreshold){
-                treeNodes.Add(new RRTNode(targetPose,currentNode));
+            if(GetDistance(targetPose, nearestNodeToTarget.Position) <= distanceThreshold){
+                treeNodes.Add(new RRTNode(targetPose,nearestNodeToTarget));
                 var pathNode = retracePath(treeNodes.Last());
                 var path = new float[pathNode.Count][];
                 for(int i = 0; i<path.Length; i++){
                     path[i] = pathNode[i].Position;
                 }
-                return new RRTResult(path,treeNodes);
+                return new RRTResult(path,treeNodes,occupancyGrid,farNodeList);
             }
             else{
-                return new RRTResult([startPose,targetPose],treeNodes);
+                return new RRTResult([startPose,targetPose],treeNodes,occupancyGrid, farNodeList);
             }
 
 
@@ -66,19 +85,29 @@ namespace PathFinding
         static RRTNode getNextNode(RRTNode farNode, RRTNode nearestNode,float distanceThreshold, bool[,] occupancyGrid){
             float[] currentPoint = new float[2];
             nearestNode.Position.CopyTo(currentPoint,0);
-            float gradient = (farNode.Position[1]-nearestNode.Position[1])/(farNode.Position[0]-nearestNode.Position[0]);
-            float yIntercept = farNode.Position[1]-gradient*farNode.Position[0];
-            float dx = 1/MathF.Sqrt(1+gradient*gradient);
-            float dy = gradient/MathF.Sqrt(1+gradient*gradient);  
-            while(GetDistance(nearestNode.Position, currentPoint)<distanceThreshold){
+            float gradient = farNode.Position[0]-nearestNode.Position[0] == 0? 10E9f : (farNode.Position[1]-nearestNode.Position[1])/(farNode.Position[0]-nearestNode.Position[0]);
+            float multiplier = 1.0f;
+            float dx = 1/MathF.Sqrt(1+gradient*gradient) * multiplier * (farNode.Position[0]>nearestNode.Position[0]?1:-1);
+            float dy = MathF.Abs(gradient)/MathF.Sqrt(1+gradient*gradient) * multiplier * (farNode.Position[1]>nearestNode.Position[1]?1:-1);  
+            int count = 0;
+            while(count*multiplier<distanceThreshold){
                 currentPoint[0]+=dx;
                 currentPoint[1]+=dy;
+
                 if(occupancyGrid[Math.Clamp((int)MathF.Round(currentPoint[0]),0,occupancyGrid.GetLength(0)-1) , Math.Clamp((int)MathF.Round(currentPoint[1]), 0 ,occupancyGrid.GetLength(1)-1)]){
                     break;
+                }                
+                if ( count > GetDistance(nearestNode.Position,farNode.Position)){
+                    float[] pos = [Math.Clamp(farNode.Position[0],0,occupancyGrid.GetLength(0)), Math.Clamp(farNode.Position[1], 0, occupancyGrid.GetLength(1))];
+                    return new RRTNode(pos, nearestNode) ;
                 }
+                count++;
             }
             currentPoint[0]-=dx;
+            currentPoint[0] = Math.Clamp(currentPoint[0], 0.0f, (float) occupancyGrid.GetLength(0));
             currentPoint[1]-=dy;
+            currentPoint[1] = Math.Clamp(currentPoint[1], 0.0f, (float) occupancyGrid.GetLength(1));
+
             return new RRTNode(currentPoint,nearestNode);
 
         }

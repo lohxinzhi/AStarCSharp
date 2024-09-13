@@ -51,6 +51,8 @@
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+
                     </Grid.RowDefinitions>
 
                     <Button Name="button_UploadMap" Content="Upload Map" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Width="120" Margin="10,0,0,5" FontSize="18" Click="button_UploadMap_Click"/>
@@ -74,8 +76,12 @@
                     <TextBlock Text="Simplify Path" Height="35" Grid.Column="5" Grid.Row="2" TextWrapping="Wrap" FontWeight="SemiBold"/>
                     <CheckBox Name="checkBox_SimplifyPath" Grid.Row="2" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Checked="checkBox_SimplifyPath_Checked" Unchecked="checkBox_SimplifyPath_Unchecked"/>
 
-                    <Slider x:Name="slider_RRTIteration" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="6" VerticalAlignment="Center" HorizontalAlignment="Center" Width="600" TickPlacement="BottomRight" Interval="2000" Minimum="1000" Maximum="10000" Value="5000" ValueChanged="slider_RRTIteration_ValueChanged"/>
+                    <Slider x:Name="slider_RRTIteration" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="6" VerticalAlignment="Center" HorizontalAlignment="Center" Width="600" TickPlacement="None" Interval="1" IsSnapToTickEnabled="True" Minimum="1000" Maximum="10000" Value="5000" ValueChanged="slider_RRTIteration_ValueChanged"/>
                     <TextBox Name="textBox_RRTIteration" Grid.Column="6" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Width="60" Height="35" Text="{Binding ElementName=slider_RRTIteration, Path=Value}" TextAlignment="Center"/>
+
+                    <Slider x:Name="slider_RRTShowNodes" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="6" VerticalAlignment="Center" HorizontalAlignment="Center" Width="600" TickPlacement="None" Interval="1" IsSnapToTickEnabled="True" Minimum="1" Maximum="{Binding ElementName=slider_RRTIteration, Path=Value}" Value="1" ValueChanged="slider_RRTShowNodes_ValueChanged" SmallChange="1"/>
+                    <TextBox Name="textBox_RRTShowNodes" Grid.Column="6" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Width="60" Height="35" Text="{Binding ElementName=slider_RRTShowNodes, Path=Value}" TextAlignment="Center"/>
+
                 </Grid>
             </GroupBox>
         </StackPanel>
