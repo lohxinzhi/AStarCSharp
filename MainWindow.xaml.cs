@@ -35,6 +35,8 @@ public partial class MainWindow : Window
 
     AStarResult aStarResult;
     RRTResult rRTResult;
+    RRTResult2 rRTResult2;
+
 
     DispatcherTimer TimerObj;
 
@@ -129,6 +131,10 @@ public partial class MainWindow : Window
                         ShowExpanded(rRTResult.treeList, rRTResult.occupancyGrid,rRTResult.farNodeList);
                         break;
                     }
+                    case SearchAlgo.RRTSTAR:{
+                        ShowExpanded(rRTResult2.treeList, rRTResult2.occupancyGrid,rRTResult2.farNodeList);
+                        break;
+                    }
                 }
             }
         }
@@ -180,7 +186,7 @@ public partial class MainWindow : Window
             //     count++;
             // }
             var last = farNodeList[Math.Clamp(showRRTNodeCount-1,0,farNodeList.Count-1)];
-            Plot_1.Plot.Add.Marker(last.Position[0], last.Position[1], size:5, color:palette1.GetColor(0));
+            Plot_1.Plot.Add.Marker(last.Position[0], last.Position[1], size:15, color:palette1.GetColor(0));
 
         }
         count = 0;
@@ -252,7 +258,10 @@ public partial class MainWindow : Window
 
     void UpdateRRTSTAR()
     {
-        ;
+        rRTResult2 = RRTSearch2.getPath([InitialX, InitialY], [TargetX, TargetY],nodeDiameter,RRTIteration,Map);
+        if (rRTResult2!=null){
+            ShowPath(rRTResult2.path);
+        };
     }
 
     void UpdateView()
@@ -273,7 +282,9 @@ public partial class MainWindow : Window
                 break;
             }
             case SearchAlgo.RRTSTAR:{
-                ;
+                if (rRTResult2!=null){
+                    ShowPath(rRTResult2.path);
+                }
                 break;
             }
         }

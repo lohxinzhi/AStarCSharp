@@ -3,14 +3,14 @@ using OpenTK.Graphics.OpenGL;
 
 namespace PathFinding
 {
-    public class RRTResult
+    public class RRTResult2
     {
         public float[][] path;
         public List<RRTNode> treeList;
         public bool[,] occupancyGrid;
         public List<RRTNode> farNodeList;
 
-        public RRTResult(float[][] _path, List<RRTNode> _treeList, bool[,] _occupancyGrid, List<RRTNode> _farNodeList){
+        public RRTResult2(float[][] _path, List<RRTNode> _treeList, bool[,] _occupancyGrid, List<RRTNode> _farNodeList){
             path = _path;
             treeList = _treeList;
             occupancyGrid = _occupancyGrid;
@@ -19,9 +19,9 @@ namespace PathFinding
         }
 
     }
-    public class RRTSearch
+    public class RRTSearch2
     {
-        public static RRTResult getPath(float[] startPose, float[] targetPose, float distanceThreshold, int maxIteration, ScottPlot.Image MapImage)
+        public static RRTResult2 getPath(float[] startPose, float[] targetPose, float distanceThreshold, int maxIteration, ScottPlot.Image MapImage)
         {
             var rnd = new Random();
             bool[,] occupancyGrid = GetOccupancyGridFromImage(MapImage);
@@ -51,13 +51,15 @@ namespace PathFinding
                 }
                 var nextNode = getNextNode(farNode,nearestNode,distanceThreshold,occupancyGrid);
                 if (nextNode!=null){
-                    treeNodes.Add(nextNode);
+                    treeNodes.Add(nextNode);                
                     currentNode = treeNodes.Last();
                     if( GetDistance(currentNode.Position,targetPose) <GetDistance(nearestNodeToTarget.Position,targetPose)){
                         nearestNodeToTarget=currentNode;
                     }
                 }
                 currentIteration++;
+
+                
             }
 
             if(GetDistance(targetPose, nearestNodeToTarget.Position) <= distanceThreshold){
@@ -67,10 +69,10 @@ namespace PathFinding
                 for(int i = 0; i<path.Length; i++){
                     path[i] = pathNode[i].Position;
                 }
-                return new RRTResult(path,treeNodes,occupancyGrid,farNodeList);
+                return new RRTResult2(path,treeNodes,occupancyGrid,farNodeList);
             }
             else{
-                return new RRTResult([startPose,targetPose],treeNodes,occupancyGrid, farNodeList);
+                return new RRTResult2([startPose,targetPose],treeNodes,occupancyGrid, farNodeList);
             }
 
 
@@ -86,21 +88,34 @@ namespace PathFinding
         }
 
         static RRTNode getNextNode(RRTNode farNode, RRTNode nearestNode,float distanceThreshold, bool[,] occupancyGrid){
+            var rnd = new Random();
             float[] currentPoint = new float[2];
             nearestNode.Position.CopyTo(currentPoint,0);
-            float gradient = farNode.Position[0]-nearestNode.Position[0] == 0? 10E9f : (farNode.Position[1]-nearestNode.Position[1])/(farNode.Position[0]-nearestNode.Position[0]);
+            float angle = MathF.Atan2(farNode.Position[1]-nearestNode.Position[1], farNode.Position[0]-nearestNode.Position[0]);
             float multiplier = 1.0f;
-            float dx = 1/MathF.Sqrt(1+gradient*gradient) * multiplier * (farNode.Position[0]>nearestNode.Position[0]?1:-1);
-            float dy = MathF.Abs(gradient)/MathF.Sqrt(1+gradient*gradient) * multiplier * (farNode.Position[1]>nearestNode.Position[1]?1:-1);  
+            float dx = multiplier * MathF.Cos(angle);
+            float dy = multiplier * MathF.Sin(angle);  
             int count = 0;
+            bool reflected = false;
             while(count*multiplier<distanceThreshold){
                 currentPoint[0]+=dx;
                 currentPoint[1]+=dy;
 
-                if(occupancyGrid[Math.Clamp((int)MathF.Round(currentPoint[0]),0,occupancyGrid.GetLength(0)-1) , Math.Clamp((int)MathF.Round(currentPoint[1]), 0 ,occupancyGrid.GetLength(1)-1)]){
-                    break;
+                if( occupancyGrid[Math.Clamp((int)MathF.Round(currentPoint[0]),0,occupancyGrid.GetLength(0)-1) , Math.Clamp((int)MathF.Round(currentPoint[1]), 0 ,occupancyGrid.GetLength(1)-1)]){
+                    // return null;
+                    // break;
+                    if(!reflected){
+                        currentPoint[0]-=dx;
+                        currentPoint[1]-=dy;
+                        (dx,dy) = rnd.Next(0,2) == 1 ? (-dy,dx) : (dy,-dx);
+                        reflected=true;
+                    }
+                    else{
+                        break;
+                    }
+
                 }                
-                if ( count > GetDistance(nearestNode.Position,farNode.Position)){
+                if ( !reflected && count > GetDistance(nearestNode.Position,farNode.Position)){
                     float[] pos = [Math.Clamp(farNode.Position[0],0,occupancyGrid.GetLength(0)), Math.Clamp(farNode.Position[1], 0, occupancyGrid.GetLength(1))];
                     return new RRTNode(pos, nearestNode) ;
                 }
